@@ -1,4 +1,7 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_cors::Cors;
+use actix_web::{
+    get, http, middleware::Logger, post, web, App, HttpResponse, HttpServer, Responder,
+};
 
 #[get("/")]
 async fn hello() -> impl Responder {
@@ -16,8 +19,18 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
     HttpServer::new(|| {
+        let cors = Cors::default()
+            .allowed_origin("http://thetriangle.org")
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+            .allowed_header(http::header::CONTENT_TYPE);
+
         App::new()
+            .wrap(Cors::permissive())
+            .wrap(Logger::default())
             .service(hello)
             .service(echo)
             .route("/hey", web::get().to(manual_hello))
