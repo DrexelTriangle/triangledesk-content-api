@@ -1,13 +1,15 @@
+mod collections;
+mod error;
+
 use actix_cors::Cors;
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
+use collections::items::all_items;
+use error::CAPIError;
 use mongodb::{
     options::{ClientOptions, ResolverConfig},
     Client,
 };
 use std::{env, error::Error};
-
-mod collections;
-use collections::items::all_items;
 
 #[get("/")]
 async fn hello() -> impl Responder {
