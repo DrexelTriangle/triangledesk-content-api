@@ -6,19 +6,13 @@ use mongodb::Cursor;
 
 #[get("/items")]
 async fn all_items(data: web::Data<AppData>) -> impl Responder {
-    let client = &data.mdclient;
-
-    // Print the databases in our MongoDB cluster:
-    println!("Databases:");
-    for name in client.list_database_names(None, None).await.unwrap() {
-        println!("- {}", name);
-    }
+    let client = &data.mdbclient;
 
     let collection: mongodb::Collection<Document> = client.database("content").collection("items");
-    let mut allItems: Cursor<Document> = collection.find(None, None).await.unwrap();
-    let itemsVec: Vec<Document> = allItems.map(|item| item.unwrap()).collect().await;
+    let all_items: Cursor<Document> = collection.find(None, None).await.unwrap();
+    let items_vec: Vec<Document> = all_items.map(|item| item.unwrap()).collect().await;
 
-    let mut resp = itemsVec.into_iter().fold(String::from("["), |acc, doc| {
+    let mut resp = items_vec.into_iter().fold(String::from("["), |acc, doc| {
         acc + &format!("{}", doc) + ","
     });
     resp.pop();
