@@ -4,13 +4,18 @@ use bson::Document;
 use futures_util::StreamExt;
 use mongodb::Cursor;
 
+#[utoipa::path(
+    context_path="/content",
+    responses(
+        (status=200, description="get all news items", body=String)
+    )
+)]
 #[get("/items")]
 async fn all_items(data: web::Data<AppData>) -> Result<impl Responder, CAPIError> {
     let client = &data.mdbclient;
 
     let collection: mongodb::Collection<Document> = client.database("content").collection("items");
     let all_items: Cursor<Document> = collection.find(None, None).await?;
-    // let items_vec: Vec<Document> = all_items.map(|item| item.unwrap()).collect().await;
 
     let mut resp = all_items
         .map(|item| item.unwrap())

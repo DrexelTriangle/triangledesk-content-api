@@ -16,3 +16,5 @@ chrono = "0.4" # Used for setting DateTimes
 serde = "1" # Used in the Map Data into Structs section
 dotenv = "0.15.0"
 futures-util = "0.3.30"
+utoipa = { version = "4.2.0", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "6.0.0", features = ["actix-web"] }

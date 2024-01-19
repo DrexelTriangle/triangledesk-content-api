@@ -1,16 +1,20 @@
-mod collections;
+mod content;
 mod error;
 
 use actix_cors::Cors;
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
-use collections::items::all_items;
-use error::CAPIError;
+use content::items;
 use mongodb::{
     options::{ClientOptions, ResolverConfig},
     Client,
 };
 use std::{env, error::Error};
+use utoipa::{openapi, OpenApi};
+use utoipa_swagger_ui::SwaggerUi;
 
+#[utoipa::path(
+    responses((status = 200, description = "root successful, service exists", body=String))
+)]
 #[get("/")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -19,6 +23,10 @@ async fn hello() -> impl Responder {
 struct AppData {
     mdbclient: mongodb::Client,
 }
+
+#[derive(OpenApi)]
+#[openapi(paths(hello, items::all_items))]
+struct ApiDoc;
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -34,6 +42,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ClientOptions::parse_with_resolver_config(&client_uri, ResolverConfig::cloudflare())
             .await?;
 
+    let openapi = ApiDoc::openapi();
+
     Ok(HttpServer::new(move || {
         let _cors = Cors::default()
             .allowed_origin("http://thetriangle.org")
@@ -44,12 +54,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // Have to unwrap because it's inside closure
         let mdbclient = Client::with_options(options.clone()).unwrap();
 
+        let content = web::scope("/content").service(items::all_items);
+
         App::new()
             .app_data(web::Data::new(AppData { mdbclient }))
             .wrap(Cors::permissive())
             .wrap(Logger::default())
             .service(hello)
-            .service(all_items)
+            .service(content)
+            .service(
+                SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
+            )
     })
     .bind(("127.0.0.1", 8080))?
     .run()
