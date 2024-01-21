@@ -3,13 +3,13 @@ mod error;
 
 use actix_cors::Cors;
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
-use content::items;
+use content::items::{self, NewsItemSchema};
 use mongodb::{
     options::{ClientOptions, ResolverConfig},
     Client,
 };
 use std::{env, error::Error};
-use utoipa::{openapi, OpenApi};
+use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 #[utoipa::path(
@@ -23,10 +23,6 @@ async fn hello() -> impl Responder {
 struct AppData {
     mdbclient: mongodb::Client,
 }
-
-#[derive(OpenApi)]
-#[openapi(paths(hello, items::all_items))]
-struct ApiDoc;
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -42,6 +38,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ClientOptions::parse_with_resolver_config(&client_uri, ResolverConfig::cloudflare())
             .await?;
 
+    #[derive(OpenApi)]
+    #[openapi(
+        paths(hello, items::all_items, items::item_by_id),
+        components(schemas(items::NewsItem, items::NewsService)),
+        modifiers(&NewsItemSchema)
+    )]
+    struct ApiDoc;
+
     let openapi = ApiDoc::openapi();
 
     Ok(HttpServer::new(move || {
@@ -54,7 +58,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // Have to unwrap because it's inside closure
         let mdbclient = Client::with_options(options.clone()).unwrap();
 
-        let content = web::scope("/content").service(items::all_items);
+        let content = web::scope("/content")
+            .service(items::all_items)
+            .service(items::item_by_id);
 
         App::new()
             .app_data(web::Data::new(AppData { mdbclient }))
