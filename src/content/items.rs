@@ -17,6 +17,14 @@ pub struct NewsService {
 pub struct NewsItem {
     #[serde(rename = "_id")]
     id: String,
+    #[serde(rename = "type")]
+    itemtype: String,
+    language: String,
+
+    copyrightholder: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    slugline: Option<String>,
     headline: String,
     byline: String,
     service: Vec<NewsService>,
