@@ -46,7 +46,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         paths(hello, items::all_items, items::item_by_id, upload::upload_item),
         components(schemas(NewsItem, NewsService)),
         tags(
-            (name="items", description="Published news items")
+            (name="items", description="Published news items"),
+            (name="upload", description="Push new items. Restricted to certain IPs")
         ),
         modifiers(&NewsItemSchema)
     )]
