@@ -7,6 +7,7 @@ use crate::{error::CAPIError, AppData};
 use actix_web::http::header::X_FORWARDED_FOR;
 use actix_web::{post, web, HttpResponse, Responder};
 use bson::doc;
+use mongodb::options::ReplaceOptions;
 
 #[utoipa::path(
     responses(
@@ -56,7 +57,11 @@ async fn upload_item(
         let collection: mongodb::Collection<NewsItem> =
             client.database("content").collection("items");
         collection
-            .replace_one(doc! {"_id": item.get_id()}, item, None)
+            .replace_one(
+                doc! {"_id": item.get_id()},
+                item,
+                Some(ReplaceOptions::builder().upsert(Some(true)).build()),
+            )
             .await?;
         Ok(HttpResponse::Ok())
     } else {
