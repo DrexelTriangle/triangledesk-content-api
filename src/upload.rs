@@ -1,10 +1,10 @@
 use std::env;
-use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+use std::net::{IpAddr, Ipv4Addr};
 use std::str::FromStr;
 
 use crate::newsitem::NewsItem;
 use crate::{error::CAPIError, AppData};
-use actix_web::http::header::{HeaderValue, X_FORWARDED_FOR};
+use actix_web::http::header::X_FORWARDED_FOR;
 use actix_web::{post, web, HttpResponse, Responder};
 
 #[utoipa::path(
@@ -26,16 +26,16 @@ async fn upload_item(
         .headers()
         .get(X_FORWARDED_FOR)
         .and_then(|val| {
-            env::var("PROXY_IPS")
+            env::var("TRUSTED_PROXIES")
                 .map(|proxy_var| {
-                    let proxy_ips = proxy_var.split(",").into_iter().filter_map(|ipstr| {
+                    let proxies = proxy_var.split(",").into_iter().filter_map(|ipstr| {
                         if let Ok(ipv4) = Ipv4Addr::from_str(ipstr.trim()) {
                             Some(ipnet::Ipv4Net::new(ipv4, 1).unwrap())
                         } else {
                             ipnet::Ipv4Net::from_str(ipstr.trim()).ok()
                         }
                     });
-                    get_real_ip(peer_ip, val.to_str().unwrap(), proxy_ips.collect())
+                    get_real_ip(peer_ip, val.to_str().unwrap(), proxies.collect())
                 })
                 .ok()
         })
@@ -62,11 +62,11 @@ async fn upload_item(
 fn get_real_ip(
     peer_ip: Ipv4Addr,
     x_forwarded_for: &str,
-    proxy_ips: iprange::IpRange<ipnet::Ipv4Net>,
+    proxies: iprange::IpRange<ipnet::Ipv4Net>,
 ) -> Ipv4Addr {
     let mut last_peer = peer_ip;
     let mut forwards: Vec<&str> = x_forwarded_for.split(",").collect();
-    while proxy_ips.contains(&last_peer) && forwards.len() > 0 {
+    while proxies.contains(&last_peer) && forwards.len() > 0 {
         let fwd = forwards.pop().unwrap();
         last_peer = Ipv4Addr::from_str(fwd.trim()).unwrap();
     }
