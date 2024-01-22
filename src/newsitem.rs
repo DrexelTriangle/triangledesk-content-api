@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use utoipa::{openapi::OpenApi, Modify, ToSchema};
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
@@ -8,6 +9,7 @@ pub struct NewsService {
     name: String,
 }
 
+#[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, ToSchema)]
 pub struct NewsItem {
     #[serde(rename = "_id")]
@@ -15,16 +17,20 @@ pub struct NewsItem {
     #[serde(rename = "type")]
     itemtype: String,
     language: String,
+    readtime: i32,
+    wordcount: i32,
+    charcount: i32,
 
     copyrightholder: String,
+    copyrightnotice: String,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     slugline: Option<String>,
     headline: String,
     byline: String,
     service: Vec<NewsService>,
     body_html: String,
     versioncreated: DateTime<Utc>,
+    firstpublished: DateTime<Utc>,
 }
 
 impl NewsItem {
@@ -43,12 +49,20 @@ impl Modify for NewsItemSchema {
         match schema {
             utoipa::openapi::RefOr::Ref(_) => todo!(), // tf is this type idk how to extract from it
             utoipa::openapi::RefOr::T(s) => match s {
-                utoipa::openapi::Schema::Object(obj) => obj.properties.insert(
-                    "versioncreated".to_owned(),
-                    utoipa::openapi::ObjectBuilder::new()
-                        .schema_type(utoipa::openapi::SchemaType::String)
-                        .into(),
-                ),
+                utoipa::openapi::Schema::Object(obj) => {
+                    obj.properties.insert(
+                        "versioncreated".to_owned(),
+                        utoipa::openapi::ObjectBuilder::new()
+                            .schema_type(utoipa::openapi::SchemaType::String)
+                            .into(),
+                    );
+                    obj.properties.insert(
+                        "firstpublished".to_owned(),
+                        utoipa::openapi::ObjectBuilder::new()
+                            .schema_type(utoipa::openapi::SchemaType::String)
+                            .into(),
+                    )
+                }
                 _ => unreachable!(),
             },
         };
