@@ -48,15 +48,15 @@ async fn upload_item(
         .filter_map(|ipstr| Some(IpAddr::V4(Ipv4Addr::from_str(ipstr.trim()).ok()?)));
 
     if allowed_ips.find(|ip| *ip == real_ip).is_some() {
-        println!("this ip is allowed")
+        println!("this ip is allowed");
+        Ok(HttpResponse::Ok())
     } else {
         log::warn!(
             "UNAUTHORIZED IP {} BLOCKED FROM ACCESSING UPLOAD ENDPOINT",
             real_ip
-        )
+        );
+        Ok(HttpResponse::Forbidden())
     }
-
-    Ok(HttpResponse::Ok())
 }
 
 fn get_real_ip(
