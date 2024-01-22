@@ -13,7 +13,7 @@ use mongodb::{
 use newsitem::{NewsItem, NewsItemSchema, NewsService};
 use std::{env, error::Error};
 use utoipa::OpenApi;
-use utoipa_swagger_ui::SwaggerUi;
+use utoipa_swagger_ui::{Config, SwaggerUi};
 
 #[utoipa::path(
     responses((status = 200, description = "root successful, service exists", body=String))
@@ -69,6 +69,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .service(items::all_items)
             .service(items::item_by_id);
 
+        let base_url = env::var("BASE_URL").unwrap_or(String::from(""));
+
         App::new()
             .app_data(web::Data::new(AppData { mdbclient }))
             .wrap(Cors::permissive())
@@ -77,7 +79,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .service(content)
             .service(upload::upload_item)
             .service(
-                SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
+                SwaggerUi::new("/swagger-ui/{_:.*}")
+                    .url("/api-docs/openapi.json", openapi.clone())
+                    .config(Config::new([base_url + "/api-docs/openapi.json"])),
             )
     })
     .bind(("127.0.0.1", 8080))?
