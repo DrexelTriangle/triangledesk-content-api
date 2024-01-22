@@ -13,7 +13,8 @@ pub struct NewsService {
 #[derive(Serialize, Deserialize, Debug, ToSchema)]
 pub struct NewsItem {
     #[serde(rename = "_id")]
-    id: String,
+    id: Option<String>,
+    guid: String,
     #[serde(rename = "type")]
     itemtype: String,
     language: String,
@@ -35,7 +36,7 @@ pub struct NewsItem {
 
 impl NewsItem {
     pub fn get_id(&self) -> String {
-        self.id.to_string()
+        self.id.clone().unwrap_or(self.guid.clone())
     }
     pub fn get_versioncreated(&self) -> DateTime<Utc> {
         self.versioncreated
