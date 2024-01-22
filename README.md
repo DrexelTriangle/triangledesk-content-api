@@ -16,8 +16,3 @@ necessary environment variables in `.env` file or otherwise.
   - `/content` REST API endpoint that serves complete JSON-LD of news items and full media files
     - `/items` sub-endpoint for news items (see API docs for details)
   - Reception endpoint where Superdesk pushes published articles, which are then decorated with rNews types and saved to MongoDB, along with media which is downloaded
-
-
-
-### ninjs transformations
-- versioncreated and other date fields to datetime rather than string

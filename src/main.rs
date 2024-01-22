@@ -1,13 +1,15 @@
 mod content;
 mod error;
+mod newsitem;
 
 use actix_cors::Cors;
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
-use content::items::{self, NewsItemSchema};
+use content::items;
 use mongodb::{
     options::{ClientOptions, ResolverConfig},
     Client,
 };
+use newsitem::{NewsItem, NewsItemSchema, NewsService};
 use std::{env, error::Error};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
@@ -41,7 +43,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     #[derive(OpenApi)]
     #[openapi(
         paths(hello, items::all_items, items::item_by_id),
-        components(schemas(items::NewsItem, items::NewsService)),
+        components(schemas(NewsItem, NewsService)),
         modifiers(&NewsItemSchema)
     )]
     struct ApiDoc;
