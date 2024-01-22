@@ -1,11 +1,10 @@
 use crate::{error::CAPIError, newsitem::NewsItem, AppData};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
-use chrono::{DateTime, Utc};
 use futures_util::StreamExt;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::cmp::Ordering;
-use utoipa::{IntoParams, Modify, ToSchema};
+use utoipa::IntoParams;
 
 #[derive(Deserialize, IntoParams)]
 struct ODataParams {
@@ -16,7 +15,7 @@ struct ODataParams {
 #[utoipa::path(
     context_path="/content",
     responses(
-        (status=200, description="get all news items", body=String)
+        (status=200, description="Successfully retrieved all news items according to query", body=NewsItem)
     ),
     params(ODataParams)
 )]
@@ -56,7 +55,8 @@ async fn all_items(
 
 #[utoipa::path( context_path="/content",
     responses(
-        (status=200, description="get news item by id", body=String)
+        (status=200, description="Successfully retrieved news item with given id", body=NewsItem),
+        (status=404, description="Could not find news item with given id")
     )
 )]
 #[get("/items/{_id}")]

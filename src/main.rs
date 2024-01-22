@@ -44,6 +44,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     #[openapi(
         paths(hello, items::all_items, items::item_by_id),
         components(schemas(NewsItem, NewsService)),
+        tags(
+            (name="items", description="Published news items")
+        ),
         modifiers(&NewsItemSchema)
     )]
     struct ApiDoc;
