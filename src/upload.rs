@@ -29,10 +29,10 @@ async fn upload_item(
             env::var("PROXY_IPS")
                 .map(|proxy_var| {
                     let proxy_ips = proxy_var.split(",").into_iter().filter_map(|ipstr| {
-                        if let Ok(ipv4) = Ipv4Addr::from_str(ipstr) {
+                        if let Ok(ipv4) = Ipv4Addr::from_str(ipstr.trim()) {
                             Some(ipnet::Ipv4Net::new(ipv4, 1).unwrap())
                         } else {
-                            ipnet::Ipv4Net::from_str(ipstr).ok()
+                            ipnet::Ipv4Net::from_str(ipstr.trim()).ok()
                         }
                     });
                     get_real_ip(peer_ip, val.to_str().unwrap(), proxy_ips.collect())
@@ -52,7 +52,7 @@ async fn upload_item(
     } else {
         log::warn!(
             "UNAUTHORIZED IP {} BLOCKED FROM ACCESSING UPLOAD ENDPOINT",
-            peer_ip
+            real_ip
         )
     }
 
@@ -68,7 +68,7 @@ fn get_real_ip(
     let mut forwards: Vec<&str> = x_forwarded_for.split(",").collect();
     while proxy_ips.contains(&last_peer) && forwards.len() > 0 {
         let fwd = forwards.pop().unwrap();
-        last_peer = Ipv4Addr::from_str(fwd).unwrap();
+        last_peer = Ipv4Addr::from_str(fwd.trim()).unwrap();
     }
     last_peer
 }
