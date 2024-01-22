@@ -1,6 +1,7 @@
 mod content;
 mod error;
 mod newsitem;
+mod upload;
 
 use actix_cors::Cors;
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
@@ -42,7 +43,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     #[derive(OpenApi)]
     #[openapi(
-        paths(hello, items::all_items, items::item_by_id),
+        paths(hello, items::all_items, items::item_by_id, upload::upload_item),
         components(schemas(NewsItem, NewsService)),
         tags(
             (name="items", description="Published news items")
@@ -73,6 +74,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .wrap(Logger::default())
             .service(hello)
             .service(content)
+            .service(upload::upload_item)
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
             )
