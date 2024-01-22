@@ -6,6 +6,7 @@ use crate::newsitem::NewsItem;
 use crate::{error::CAPIError, AppData};
 use actix_web::http::header::X_FORWARDED_FOR;
 use actix_web::{post, web, HttpResponse, Responder};
+use bson::doc;
 
 #[utoipa::path(
     responses(
@@ -15,7 +16,7 @@ use actix_web::{post, web, HttpResponse, Responder};
 #[post("/upload")]
 async fn upload_item(
     data: web::Data<AppData>,
-    item: web::Json<NewsItem>,
+    body: web::Json<NewsItem>,
     req: actix_web::HttpRequest,
 ) -> Result<impl Responder, CAPIError> {
     let peer_ip: Ipv4Addr = match req.peer_addr().unwrap().ip() {
@@ -49,6 +50,14 @@ async fn upload_item(
 
     if allowed_ips.find(|ip| *ip == real_ip).is_some() {
         println!("this ip is allowed");
+        let client = &data.mdbclient;
+
+        let item = body.into_inner();
+        let collection: mongodb::Collection<NewsItem> =
+            client.database("content").collection("items");
+        collection
+            .replace_one(doc! {"_id": item.get_id()}, item, None)
+            .await?;
         Ok(HttpResponse::Ok())
     } else {
         log::warn!(

@@ -34,6 +34,9 @@ pub struct NewsItem {
 }
 
 impl NewsItem {
+    pub fn get_id(&self) -> String {
+        self.id.to_string()
+    }
     pub fn get_versioncreated(&self) -> DateTime<Utc> {
         self.versioncreated
     }
