@@ -1,11 +1,10 @@
-mod content;
 mod error;
+mod items;
 mod newsitem;
 mod upload;
 
 use actix_cors::Cors;
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
-use content::items;
 use mongodb::{
     options::{ClientOptions, ResolverConfig},
     Client,
@@ -65,10 +64,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // Have to unwrap because it's inside closure
         let mdbclient = Client::with_options(options.clone()).unwrap();
 
-        let content = web::scope("/content")
-            .service(items::all_items)
-            .service(items::item_by_id);
-
         let base_url = env::var("BASE_URL").unwrap_or(String::from(""));
 
         App::new()
@@ -76,7 +71,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .wrap(Cors::permissive())
             .wrap(Logger::default())
             .service(hello)
-            .service(content)
+            .service(items::all_items)
+            .service(items::item_by_id)
             .service(upload::upload_item)
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}")

@@ -38,6 +38,5 @@ Your virtual host can use SSL as usual, and host something else at root
 - Webserver binary that serves all endpoints
   - `/swagger-ui` endpoint that serves API docs powered by OpenAPI
   - GraphQL endpoint that resolves queries to json with formulated `@context` at root of response, adjacent to `data`
-  - `/content` REST API endpoint that serves complete JSON-LD of news items and full media files
-    - `/items` sub-endpoint for news items (see API docs for details)
+  - REST API endpoints that serve items from MongoDB (see OpenAPI reference for details)
   - `/upload` endpoint where Superdesk pushes published articles, which are then decorated with rNews types and saved to MongoDB, along with media which is downloaded
