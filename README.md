@@ -4,7 +4,7 @@ This project, a part of the Triangledesk fork of Superdesk, aims to correct that
 Currently being prototyped and not yet approved for the project by the Triangle IT Directors.
 
 ## Setup
-Note: the .env file is parsed
+Note: a .env file is parsed for environment variables
 
 Create a MongoDB instance:
 - database `content`
@@ -23,6 +23,14 @@ Add a subscriber destination to Superdesk:
 - Format: NINJS
 - Delivery Type: HTTP Push
 - Resource URL: <your-server>/upload
+
+### Apache example
+Set up a VirtualHost as usual, or open an already set up config, and add the following proxy pass:
+```
+    ProxyPass /capi/ http://localhost:8080/
+```
+Your virtual host can use SSL as usual, and host something else at root
+(like a Superdesk instance or a website that consumes this API).
 
 ## Infrastructure
 - MongoDB stores ninjs+LD items and media files
