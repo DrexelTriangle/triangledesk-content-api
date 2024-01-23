@@ -11,7 +11,8 @@ use mongodb::options::ReplaceOptions;
 
 #[utoipa::path(
     responses(
-        (status=200, description="get news item by id", body=String)
+        (status=200, description="Successfully uploaded item"),
+        (status=FORBIDDEN, description="Accessed from IP not in whitelist")
     )
 )]
 #[post("/upload")]
