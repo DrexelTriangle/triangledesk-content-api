@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -9,6 +11,14 @@ pub struct NewsService {
     name: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, ToSchema)]
+pub struct MediaRendition {
+    href: String,
+    width: i32,
+    height: i32,
+    media: String,
+}
+
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, ToSchema)]
 pub struct NewsItem {
@@ -18,20 +28,23 @@ pub struct NewsItem {
     #[serde(rename = "type")]
     itemtype: String,
     language: String,
-    readtime: i32,
-    wordcount: i32,
-    charcount: i32,
+    readtime: Option<i32>,
+    wordcount: Option<i32>,
+    charcount: Option<i32>,
 
     copyrightholder: String,
     copyrightnotice: String,
 
     slugline: Option<String>,
     headline: String,
-    byline: String,
+    byline: Option<String>,
     service: Vec<NewsService>,
-    body_html: String,
+    body_html: Option<String>,
     versioncreated: DateTime<Utc>,
-    firstpublished: DateTime<Utc>,
+    firstpublished: Option<DateTime<Utc>>,
+
+    associations: Option<HashMap<String, NewsItem>>,
+    renditions: Option<HashMap<String, MediaRendition>>,
 }
 
 impl NewsItem {
