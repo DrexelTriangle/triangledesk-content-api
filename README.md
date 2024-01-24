@@ -39,4 +39,7 @@ Your virtual host can use SSL as usual, and host something else at root
   - `/swagger-ui` endpoint that serves API docs powered by OpenAPI
   - GraphQL endpoint that resolves queries to json with formulated `@context` at root of response, adjacent to `data`
   - REST API endpoints that serve items from MongoDB (see OpenAPI reference for details)
-  - `/upload` endpoint where Superdesk pushes published articles, which are then decorated with rNews types and saved to MongoDB, along with media which is downloaded
+  - `/upload` endpoint where Superdesk pushes published articles, which are then decorated with rNews types and saved to MongoDB, along with media which is downloaded'
+ 
+## Contributions
+Some remaining important features are described in this repo's issues
