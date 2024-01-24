@@ -16,7 +16,7 @@ Add your Superdesk instance's IP in the `UPLOADER_IPS` environment variable.
 
 If running behind a proxy, add the proxy's IP or range to `TRUSTED_PROXIES`
 
-Run the webserver on `127.0.0.1:8080` with `cargo run`.
+Run the webserver on `127.0.0.1:52892` with `cargo run`.
 Set up Apache, port-forwarding, or some other way to make your API publicly accessible.
 
 Add a subscriber destination to Superdesk:
@@ -27,7 +27,7 @@ Add a subscriber destination to Superdesk:
 ### Apache example
 Set up a VirtualHost as usual, or open an already set up config, and add the following proxy pass:
 ```
-    ProxyPass /capi/ http://localhost:8080/
+    ProxyPass /capi/ http://localhost:52892/
 ```
 Your virtual host can use SSL as usual, and host something else at root
 (like a Superdesk instance or a website that consumes this API).

@@ -80,7 +80,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     .config(Config::new([base_url + "/api-docs/openapi.json"])),
             )
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 52892))?
     .run()
     .await?)
 }
