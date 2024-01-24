@@ -22,7 +22,7 @@ Set up Apache, port-forwarding, or some other way to make your API publicly acce
 Add a subscriber destination to Superdesk:
 - Format: NINJS
 - Delivery Type: HTTP Push
-- Resource URL: <your-server>/upload
+- Resource URL: [your-server]/upload
 
 ### Apache example
 Set up a VirtualHost as usual, or open an already set up config, and add the following proxy pass:
