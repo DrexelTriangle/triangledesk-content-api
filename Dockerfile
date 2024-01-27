@@ -6,10 +6,10 @@ RUN cargo init .
 COPY Cargo.* .
 
 RUN cargo build --release
-RUN rm -rf ./src
 
-COPY ./src .
+COPY ./src ./src/
 
-RUN ls -la
+RUN touch ./src/main.rs
+RUN cargo build --release
 
 CMD ["cargo", "run", "--release"]

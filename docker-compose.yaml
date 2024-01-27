@@ -1,0 +1,16 @@
+services:
+  capi:
+    build: .
+    image: triangledesk-content-api
+    ports:
+      - "52892:52892"
+    environment:
+      MONGODB_URI: mongodb://root:secret@mongodb:27017/
+      UPLOADER_IPS: "127.0.0.1"
+      TRUSTED_PROXIES: "127.0.0.1"
+
+  mongodb:
+    image: mongo:6.0.13
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
