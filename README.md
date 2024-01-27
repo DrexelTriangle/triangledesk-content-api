@@ -3,8 +3,18 @@ Superdesk's content API is one of its best features, at least in theory, because
 This project, a part of the Triangledesk fork of Superdesk, aims to correct that by being a Subscriber Destination that serves ninjs over both REST and GraphQL with rNews linked data schema metadata.
 Currently being prototyped and not yet approved for the project by the Triangle IT Directors.
 
-## Setup
-Note: a .env file is parsed for environment variables
+## Install
+### Docker
+In `docker-compose.yaml`, put the following in `capi`'s `environment`:
+- `UPLOADER_IPS`: your Superdesk instance's IP
+- `TRUSTED_PROXIES`: if running behind a proxy, the proxy's IP or range
+
+Spin up the containers:
+- `docker compose build`
+- `docker compose up -d`
+
+### Custom
+Note: a .env file, if provided, is parsed for environment variables
 
 Create a MongoDB instance:
 - database `content`
@@ -16,15 +26,17 @@ Add your Superdesk instance's IP in the `UPLOADER_IPS` environment variable.
 
 If running behind a proxy, add the proxy's IP or range to `TRUSTED_PROXIES`
 
-Run the webserver on `127.0.0.1:52892` with `cargo run`.
+Run the webserver on `localhost:52892` with `cargo run`.
 Set up Apache, port-forwarding, or some other way to make your API publicly accessible.
 
+## Setup
+### Superdesk
 Add a subscriber destination to Superdesk:
 - Format: NINJS
 - Delivery Type: HTTP Push
-- Resource URL: [your-server]/upload
+- Resource URL: [capi-endpoint]/upload
 
-### Apache example
+### Apache
 Set up a VirtualHost as usual, or open an already set up config, and add the following proxy pass:
 ```
     ProxyPass /capi/ http://localhost:52892/
