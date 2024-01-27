@@ -29,7 +29,12 @@ struct AppData {
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    dotenv::dotenv()?; // Load .env
+    match dotenv::dotenv() {
+        Ok(_) => log::info!(".env file loaded"),
+        Err(_) => log::warn!(
+            ".env file not found; make sure you've declared all environment variables you need"
+        ),
+    }
 
     let client_uri = // Ok to panic because it's developer error not user error
         env::var("MONGODB_URI").expect("You must set the MONGODB_URI environment var!");
@@ -80,7 +85,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     .config(Config::new([base_url + "/api-docs/openapi.json"])),
             )
     })
-    .bind(("127.0.0.1", 52892))?
+    .bind(("0.0.0.0", 52892))?
     .run()
     .await?)
 }
