@@ -9,7 +9,7 @@ use mongodb::{
     options::{ClientOptions, ResolverConfig},
     Client,
 };
-use newsitem::{NewsItem, NewsItemSchema, NewsService};
+use newsitem::{MediaRendition, NewsItem, NewsItemSchema, NewsService};
 use std::{env, error::Error};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::{Config, SwaggerUi};
@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     #[derive(OpenApi)]
     #[openapi(
         paths(hello, items::all_items, items::item_by_id, upload::upload_item),
-        components(schemas(NewsItem, NewsService)),
+        components(schemas(NewsItem, NewsService, MediaRendition)),
         tags(
             (name="items", description="Published news items"),
             (name="upload", description="Push new items. Restricted to certain IPs")
