@@ -1,5 +1,5 @@
 use std::env;
-use std::net::{IpAddr, Ipv4Addr};
+use std::net::{IpAddr, Ipv4Addr, SocketAddr, ToSocketAddrs};
 use std::str::FromStr;
 
 use crate::newsitem::NewsItem;
@@ -32,8 +32,12 @@ async fn upload_item(
             env::var("TRUSTED_PROXIES")
                 .map(|proxy_var| {
                     let proxies = proxy_var.split(",").into_iter().filter_map(|ipstr| {
-                        if let Ok(ipv4) = Ipv4Addr::from_str(ipstr.trim()) {
-                            Some(ipnet::Ipv4Net::new(ipv4, 1).unwrap())
+                        if let Ok(mut sock) = (ipstr.to_string() + ":80").to_socket_addrs() {
+                            if let IpAddr::V4(v4) = sock.next().unwrap().ip() {
+                                Some(ipnet::Ipv4Net::new(v4, 1).unwrap())
+                            } else {
+                                None
+                            }
                         } else {
                             ipnet::Ipv4Net::from_str(ipstr.trim()).ok()
                         }
