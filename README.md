@@ -1,7 +1,7 @@
 # Triangledesk Content API
 Superdesk's content API is one of its best features, at least in theory, because it allows any frontend to consume Superdesk articles in a sensible and standard way. In practice, however, it's wonky, kind of outdated, and misses some of the main advantages of NewsML. That can be said for most of Superdesk actually. 
 This project, a part of the Triangledesk fork of Superdesk, aims to correct that by being a Subscriber Destination that serves ninjs over both REST and GraphQL with rNews linked data schema metadata.
-Currently being prototyped and not yet approved for the project by the Triangle IT Directors.
+Currently partially functional; see issues for ways to contribute.
 
 ## Install
 ### Docker
@@ -54,4 +54,4 @@ Your virtual host can use SSL as usual, and host something else at root
   - `/upload` endpoint where Superdesk pushes published articles, which are then decorated with rNews types and saved to MongoDB, along with media which is downloaded'
  
 ## Contributions
-Some remaining important features are described in this repo's issues
+Some remaining important features are described in this repo's [issues](https://github.com/DrexelTriangle/triangledesk-content-api/issues)
